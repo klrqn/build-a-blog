@@ -24,16 +24,27 @@ class Blogpost(db.Model):
     title = db.StringProperty(required=True)
     blog_post = db.TextProperty(required=True)
     created = db.DateTimeProperty(auto_now_add=True)
-
+    # id = db.StringProperty(required=True, default=0)
+    # https://cloud.google.com/appengine/docs/python/ndb/entity-property-reference
 
 class MainPage(Handler):
-    def renderFront(self, title="", blog_post="", error=""):
+    def renderFront(self, title="", blog_post=""):
         bps = db.GqlQuery("SELECT * FROM Blogpost "
                           "ORDER BY created DESC "
                           "LIMIT 5"
                           )
 
-        self.render("home.html", title=title, blogpost=blog_post, error=error, bps=bps)
+        self.render("home.html", title=title, blogpost=blog_post, bps=bps)
+
+    def get(self):
+        self.renderFront()
+
+    def post(self):
+        self.redirect('/newpost')
+
+class AddPost(Handler):
+    def renderFront(self, title="", blog_post="", error=""):
+        self.render("newpost.html", title=title, blogpost=blog_post, error=error)
 
     def get(self):
         self.renderFront()
@@ -47,19 +58,28 @@ class MainPage(Handler):
             bp.put()
 
             self.redirect("/blog")
+
         else:
             error = "Need to add both a Title and a Blog Post"
-            self.renderFront(title, blog_post, error)
+            self.renderFront(title=title, blog_post=blog_post, error=error)
 
-class AddPost(Handler):
-    #def renderFront(self):
-    pass
+class ViewPostHandler(Handler):
+    def get(self, id):
+        # key = db.Key.from_path('Blogpost', int(id))
+        # post = db.get(key)
+        #
+        # self.rend('a_post.html', post = post)
+        pass
 
-    #def get(self):
 
 
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/blog', MainPage),
+    ('/newpost', AddPost)
+    # ('/blog/<id:\d+>', ViewPostHandler)
 ], debug=True)
+
+app = webapp2.Route([
+    ('/blog/<id:\d+>', ViewPostHandler)])
