@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+        <hr>
+        {% for bp in bps %}
+            <div class="blogpost">
+                <div class="bp-title"><h3>{{bp.title}}</h3></div>
+                <pre class="art-body">{{bp.blog_post}}</div>
+                <!-- <div class="time">{{bp.created}}</div> -->
+            </div>
+            <br>
+        {% endfor %}
+
+{% endblock %}
