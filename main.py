@@ -24,7 +24,6 @@ class Blogpost(db.Model):
     title = db.StringProperty(required=True)
     blog_post = db.TextProperty(required=True)
     created = db.DateTimeProperty(auto_now_add=True)
-    # id = db.StringProperty(required=True, default=0)
     # https://cloud.google.com/appengine/docs/python/ndb/entity-property-reference
 
 class MainPage(Handler):
@@ -33,8 +32,10 @@ class MainPage(Handler):
                           "ORDER BY created DESC "
                           "LIMIT 5"
                           )
+        for each in bps:
+            postID = each.key().id()
 
-        self.render("home.html", title=title, blogpost=blog_post, bps=bps)
+        self.render("home.html", title=title, blogpost=blog_post, bps=bps, postID=postID)
 
     def get(self):
         self.renderFront()
@@ -43,8 +44,8 @@ class MainPage(Handler):
         self.redirect('/newpost')
 
 class AddPost(Handler):
-    def renderFront(self, title="", blog_post="", error=""):
-        self.render("newpost.html", title=title, blogpost=blog_post, error=error)
+    def renderFront(self, title="", blog_post="", error="", postID=""):
+        self.render("newpost.html", title=title, blogpost=blog_post, error=error, postID="")
 
     def get(self):
         self.renderFront()
@@ -57,7 +58,9 @@ class AddPost(Handler):
             bp = Blogpost(title=title, blog_post=blog_post)
             bp.put()
 
-            self.redirect("/blog")
+            postID = bp.key().id()
+
+            self.redirect("/blog/", postID=postID)
 
         else:
             error = "Need to add both a Title and a Blog Post"
@@ -65,21 +68,27 @@ class AddPost(Handler):
 
 class ViewPostHandler(Handler):
     def get(self, id):
+        # self.response.write(id)
+
+
         # key = db.Key.from_path('Blogpost', int(id))
         # post = db.get(key)
-        #
         # self.rend('a_post.html', post = post)
-        pass
+
+        blog = Blogpost.get_by_id(int(id))
+        # id is what you get going to port 8000
+        if blog:
+            self.response.write("aw yea mufucka")
+        else:
+            pass
 
 
 
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),
-    ('/blog', MainPage),
-    ('/newpost', AddPost)
-    # ('/blog/<id:\d+>', ViewPostHandler)
+    ('/blog/', MainPage),
+    ('/newpost', AddPost),
+    webapp2.Route('/blog/<id:\d+>', ViewPostHandler)
 ], debug=True)
 
-app = webapp2.Route([
-    ('/blog/<id:\d+>', ViewPostHandler)])

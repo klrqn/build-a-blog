@@ -3,13 +3,16 @@
 {% block content %}
 
         <hr>
+<!-- <div class="time">
         {% for bp in bps %}
             <div class="blogpost">
-                <div class="bp-title"><h3><a href="/blog/">{{bp.postID}}{{bp.title}}</a></h3></div>
+                <div class="bp-title"><h3>{{bp.title}}</h3></div>
                 <pre class="art-body">{{bp.blog_post}}</div>
-                <!-- <div class="time">{{bp.created}}</div> -->
+                {{bp.created}}
             </div>
+</div> -->
+        Fuckin' A
             <br>
-        {% endfor %}
+        <!-- {% endfor %} -->
 
 {% endblock %}
