@@ -5,9 +5,9 @@
         <hr>
         {% for bp in bps %}
             <div class="blogpost">
-                <div class="bp-title"><h3><a href="/blog/">{{bp.postID}}{{bp.title}}</a></h3></div>
+                <div class="bp-title"><h3><a href="/blog/{{bp.key().id()}}">{{bp.title}}</a></h3></div>
                 <pre class="art-body">{{bp.blog_post}}</div>
-                <!-- <div class="time">{{bp.created}}</div> -->
+                <div></div>
             </div>
             <br>
         {% endfor %}

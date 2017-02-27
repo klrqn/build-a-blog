@@ -32,20 +32,23 @@ class MainPage(Handler):
                           "ORDER BY created DESC "
                           "LIMIT 5"
                           )
-        for each in bps:
-            postID = each.key().id()
 
-        self.render("home.html", title=title, blogpost=blog_post, bps=bps, postID=postID)
+        # TODO: Get Permalink to Post
+
+        self.render("home.html", title=title, blogpost=blog_post, bps=bps)
 
     def get(self):
         self.renderFront()
 
     def post(self):
-        self.redirect('/newpost')
+        if self.request.get("newpost"):
+            self.redirect('/newpost')
+        if self.request.get("home"):
+            self.redirect('/blog/')
 
 class AddPost(Handler):
-    def renderFront(self, title="", blog_post="", error="", postID=""):
-        self.render("newpost.html", title=title, blogpost=blog_post, error=error, postID="")
+    def renderFront(self, title="", blog_post="", error=""):
+        self.render("newpost.html", title=title, blogpost=blog_post, error=error)
 
     def get(self):
         self.renderFront()
@@ -54,13 +57,16 @@ class AddPost(Handler):
         title = self.request.get("title")
         blog_post = self.request.get("blog_post")
 
+        if self.request.get("home"):
+            self.redirect('/blog/')
+        if self.request.get("newpost"):
+            self.redirect('/newpost')
+
         if title and blog_post:
             bp = Blogpost(title=title, blog_post=blog_post)
             bp.put()
 
-            postID = bp.key().id()
-
-            self.redirect("/blog/", postID=postID)
+            self.redirect("/blog/")
 
         else:
             error = "Need to add both a Title and a Blog Post"
@@ -68,20 +74,15 @@ class AddPost(Handler):
 
 class ViewPostHandler(Handler):
     def get(self, id):
-        # self.response.write(id)
-
-
-        # key = db.Key.from_path('Blogpost', int(id))
-        # post = db.get(key)
-        # self.rend('a_post.html', post = post)
 
         blog = Blogpost.get_by_id(int(id))
-        # id is what you get going to port 8000
-        if blog:
-            self.response.write("aw yea mufucka")
-        else:
-            pass
 
+        if blog:
+            self.render("permalink.html", blog=blog)
+        else:
+            self.response.write("no")
+
+   # def post(self):
 
 
 
